@@ -1,71 +1,53 @@
 const express = require('express');
+const libraryUtils = require('./libraryUtils');
 const app = express();
-const fs = require('fs');
 const path = require('path')
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
 
-//app.use('/manga', express.static())
+app.use('/manga', express.static(path.join(__dirname, 'manga')));
 
-
-app.get('/api/manga', (req,res) => {
-    const dirPath = path.join(__dirname, 'manga');
+app.get('/api/manga', async (req,res) => {
     
-    fs.readdir(dirPath, (err, files) => {
-        if (err) {
-            console.log(err);
+    var files = await libraryUtils.getAllManga();
 
-            return;
-        }
-        
+    if(files.length == 0)
+    {
+        res.statusCode = 404;
+        res.send("Not Found");
+    } else {
+        res.statusCode = 200;
         res.json(files);
-    }) 
+    }
 })
-app.get('/api/manga/:mangaName', (req,res) => {
+app.get('/api/manga/:mangaName', async (req,res) => {
     const { mangaName } = req.params
 
-    const dirPath = path.join(__dirname, 'manga');
-
-    fs.readdir(dirPath, (err, files) => {
-        if (err) {
-            console.log(err);
-
-            return;
-        }
-        
-        files.forEach((file) => {
-            if (file.toLowerCase() == mangaName.toLowerCase())
-            {
-                const chapterPath = path.join(__dirname, 'manga', file);
-
-                fs.readdir(chapterPath, (err, files) => {
-                    if (err) {
-                        console.log(err);
-            
-                        return;
-                    }
-                    
-                    files = files.sort((a, b) => {
-                        const getNumber = str => parseFloat(str.replace("Episode ", ""));
-                        return getNumber(a) - getNumber(b);
-                    });
-                    
-                    res.statusCode = 200;
-                    res.json(files);
-                })
-
-            }
-        })
-    }) 
-
-    if (res.statusCode != 200) {
+    var files = await libraryUtils.getAllMangaChapters(mangaName);
+    
+    if (files.length == 0) {
         res.statusCode = 404;
         res.send('Not Found');
+    } else {
+        res.statusCode = 200;
+        res.json(files);
     }
 
 })
- app.get('/api/manga/:mangaName/:chapter', (req, res) => {
-     const { mangaName } = req.params
-     const { chapter } = req.params
+ app.get('/api/manga/:mangaName/:chapter', async (req, res) => {
+    const { mangaName } = req.params
+    const { chapter } = req.params
+
+    var files = await libraryUtils.getMangaChapterPath(mangaName, chapter);
+
+    console.log(files);
+
+    if (files.length == 0) {
+        res.statusCode = 404;
+        res.send('Not Found');
+    } else {
+        res.statusCode = 200;
+        res.json(files);
+    }
 });
