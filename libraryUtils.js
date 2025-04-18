@@ -39,7 +39,11 @@ export const getAllMangaChapters = async (mangaName) => {
         let chapters = await fs.readdir(chapterPath);
 
         chapters = chapters.sort((a, b) => {
-            const getNumber = str => parseFloat(str.replace('Episode ', ''));
+            const getNumber = (str) => {
+              const match = str.match(/[\d.]+/); 
+              return match ? parseFloat(match[0]) : 0; 
+            };
+          
             return getNumber(a) - getNumber(b);
         });
 
@@ -70,7 +74,11 @@ export const getMangaChapterPath = async (mangaName, mangaChapter) => {
         let chapters = await fs.readdir(chapterPath);
 
         chapters = chapters.sort((a, b) => {
-            const getNumber = str => parseFloat(str.replace('Episode ', ''));
+            const getNumber = (str) => {
+              const match = str.match(/[\d.]+/); 
+              return match ? parseFloat(match[0]) : 0; 
+            };
+          
             return getNumber(a) - getNumber(b);
         });
 
@@ -83,7 +91,20 @@ export const getMangaChapterPath = async (mangaName, mangaChapter) => {
             return [];
         }
 
-        return path.join(matchedFolder, matchedChapter);
+        const pagesPath = path.join(mangaDir, matchedFolder, matchedChapter);
+        let pages = await fs.readdir(pagesPath);
+
+        pages = pages.sort((a, b) => {
+            const getNumber = (str) => {
+              const match = str.match(/[\d.]+/); 
+              return match ? parseFloat(match[0]) : 0; 
+            };
+          
+            return getNumber(a) - getNumber(b);
+        });
+
+
+        return pages;
 
     } catch (err) {
         console.log(err);
