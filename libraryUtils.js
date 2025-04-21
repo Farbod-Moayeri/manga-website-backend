@@ -113,9 +113,31 @@ export const getMangaChapterPages = async (mangaName, mangaChapter) => {
         return [];
     }
 }
-export const getMangaChapterPageURL = (mangaName, mangaChapter, page) => {
+export const getMangaChapterPageURL = async (mangaName, mangaChapter, page) => {
+    
+    const mangaDir = path.join(__dirname, `public/manga/${mangaName}`);
+    try {
+        const seriesFolders = await fs.readdir(mangaDir);
+    } catch (err) {
+        return [];
+    }
+
+    const chapterDir = path.join(__dirname, `public/manga/${mangaName}/${mangaChapter}`);
+    try {
+        const chapterFolders = await fs.readdir(chapterDir);
+    } catch (err) {
+        return [];
+    }
+
+    const pageFile = path.join(__dirname, `public/manga/${mangaName}/${mangaChapter}/${page}`);
+    try {
+        const mangaFile = await fs.readFile(pageFile);
+    } catch (err) {
+        return [];
+    }
     
     const pageURL = `http://localhost:${process.env.PORT || 3000}/public/manga/${mangaName}/${mangaChapter}/${page}`;
     
+
     return pageURL;
 }

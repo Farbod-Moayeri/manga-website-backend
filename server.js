@@ -56,7 +56,7 @@ app.get('/api/manga/:mangaName/:chapter/:page', async (req, res) => {
     const { chapter } = req.params
     const { page } = req.params
 
-    var url = libraryUtils.getMangaChapterPageURL(mangaName, chapter, page);
+    var url = await libraryUtils.getMangaChapterPageURL(mangaName, chapter, page);
 
     if (url.length == 0) {
         res.statusCode = 404;
