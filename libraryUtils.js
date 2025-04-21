@@ -2,12 +2,14 @@ import path from 'path';
 import fs from 'fs/promises';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 export const getAllManga = async () => {
-    const dirPath = path.join(__dirname, 'manga');
+    const dirPath = path.join(__dirname, 'public/manga');
 
   try {
     const files = await fs.readdir(dirPath);
@@ -21,7 +23,7 @@ export const getAllManga = async () => {
 
 export const getAllMangaChapters = async (mangaName) => {
     
-    const mangaDir = path.join(__dirname, 'manga');
+    const mangaDir = path.join(__dirname, 'public/manga');
 
     try {
         const seriesFolders = await fs.readdir(mangaDir);
@@ -55,8 +57,8 @@ export const getAllMangaChapters = async (mangaName) => {
     }
 }
 
-export const getMangaChapterPath = async (mangaName, mangaChapter) => {
-    const mangaDir = path.join(__dirname, 'manga');
+export const getMangaChapterPages = async (mangaName, mangaChapter) => {
+    const mangaDir = path.join(__dirname, 'public/manga');
 
     try {
         const seriesFolders = await fs.readdir(mangaDir);
@@ -110,4 +112,10 @@ export const getMangaChapterPath = async (mangaName, mangaChapter) => {
         console.log(err);
         return [];
     }
+}
+export const getMangaChapterPageURL = (mangaName, mangaChapter, page) => {
+    
+    const pageURL = `http://localhost:${process.env.PORT || 3000}/public/manga/${mangaName}/${mangaChapter}/${page}`;
+    
+    return pageURL;
 }
